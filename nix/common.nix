@@ -1,0 +1,253 @@
+# Common home-manager config shared across all machines.
+# Brew installs the binaries; home-manager manages the configs.
+# Use `package = pkgs.emptyDirectory` to skip nix-managed installation
+# (only for modules that don't inspect the package version).
+
+{ pkgs, ... }: {
+  home.stateVersion = "24.11";
+  programs.home-manager.enable = true;
+
+  # ---------------------------------------------------------------------------
+  # Shell
+  # ---------------------------------------------------------------------------
+
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      ll = "eza -la --icons --git";
+      ls = "eza";
+      lt = "eza --tree --level=2";
+      cat = "bat --paging=never";
+      g = "git";
+      k = "kubectl";
+      dc = "docker compose";
+      ".." = "cd ..";
+      "..." = "cd ../..";
+    };
+    initExtra = ''
+      # Shell tool integrations (brew-installed binaries, not nix)
+      command -v starship &>/dev/null && eval "$(starship init bash)"
+      command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+      command -v direnv &>/dev/null && eval "$(direnv hook bash)"
+      command -v atuin &>/dev/null && eval "$(atuin init bash)"
+
+      # Source local overrides if present
+      [ -f ~/.bashrc.local ] && source ~/.bashrc.local
+    '';
+  };
+
+  # ---------------------------------------------------------------------------
+  # Prompt — Starship
+  # ---------------------------------------------------------------------------
+
+  programs.starship = {
+    enable = true;
+    package = pkgs.emptyDirectory; # brew-installed
+    enableBashIntegration = false; # manual init in bash.initExtra
+    settings = {
+      add_newline = false;
+      format = "$username$hostname$directory$git_branch$git_status$rust$python$nodejs$docker_context$kubernetes$nix_shell$cmd_duration$line_break$character";
+
+      character = {
+        success_symbol = "[❯](bold green)";
+        error_symbol = "[❯](bold red)";
+      };
+
+      directory = {
+        truncation_length = 3;
+        truncation_symbol = "…/";
+      };
+
+      git_branch.format = "[$symbol$branch(:$remote_branch)]($style) ";
+      git_status.format = "([$all_status$ahead_behind]($style) )";
+
+      cmd_duration = {
+        min_time = 2000;
+        format = "[$duration]($style) ";
+      };
+
+      kubernetes = {
+        disabled = false;
+        format = "[$symbol$context(/$namespace)]($style) ";
+      };
+
+      nix_shell = {
+        disabled = false;
+        format = "[$symbol$state]($style) ";
+      };
+
+      docker_context.disabled = true; # noisy on machines with Docker
+    };
+  };
+
+  # ---------------------------------------------------------------------------
+  # Git + Delta
+  # ---------------------------------------------------------------------------
+
+  programs.git = {
+    enable = true;
+
+    settings = {
+      user.name = "kubedoll";
+      user.email = "cagyirey@gmail.com";
+      init.defaultBranch = "main";
+      push.autoSetupRemote = true;
+      pull.rebase = true;
+      rerere.enabled = true;
+      core.pager = "delta";
+      interactive.diffFilter = "delta --color-only";
+      diff.algorithm = "histogram";
+      diff.colorMoved = "default";
+      merge.conflictStyle = "zdiff3";
+
+      alias = {
+        co = "checkout";
+        br = "branch";
+        ci = "commit";
+        st = "status -sb";
+        lg = "log --oneline --graph --decorate --all";
+        unstage = "reset HEAD --";
+        last = "log -1 HEAD";
+        amend = "commit --amend --no-edit";
+      };
+    };
+  };
+
+  # Delta config (brew-installed as git-delta, git pager set above)
+  xdg.configFile."delta/themes.gitconfig".text = ''
+    [delta]
+      navigate = true
+      side-by-side = true
+      line-numbers = true
+      hyperlinks = true
+  '';
+
+  # ---------------------------------------------------------------------------
+  # tmux
+  # ---------------------------------------------------------------------------
+
+  programs.tmux = {
+    enable = true;
+    package = pkgs.emptyDirectory; # system-installed
+    terminal = "tmux-256color";
+    baseIndex = 1;
+    escapeTime = 0;
+    historyLimit = 50000;
+    mouse = true;
+    keyMode = "vi";
+
+    extraConfig = ''
+      # True color support
+      set -ag terminal-overrides ",xterm-256color:RGB"
+
+      # Status bar
+      set -g status-position top
+      set -g status-interval 5
+
+      # Pane splitting with current path
+      bind | split-window -h -c "#{pane_current_path}"
+      bind - split-window -v -c "#{pane_current_path}"
+      unbind '"'
+      unbind %
+
+      # Pane navigation (vim-style)
+      bind h select-pane -L
+      bind j select-pane -D
+      bind k select-pane -U
+      bind l select-pane -R
+
+      # Pane resizing
+      bind -r H resize-pane -L 5
+      bind -r J resize-pane -D 5
+      bind -r K resize-pane -U 5
+      bind -r L resize-pane -R 5
+
+      # Reload config
+      bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded"
+    '';
+  };
+
+  # ---------------------------------------------------------------------------
+  # CLI tool configs (binaries from brew, config from home-manager)
+  # ---------------------------------------------------------------------------
+
+  # fzf inspects package.version, so let nix install it (it's tiny)
+  programs.fzf = {
+    enable = true;
+    enableBashIntegration = true;
+    defaultOptions = [ "--height 40%" "--layout=reverse" "--border" "--info=inline" ];
+    defaultCommand = "fd --type f --hidden --follow --exclude .git";
+    changeDirWidgetCommand = "fd --type d --hidden --follow --exclude .git";
+  };
+
+  programs.zoxide = {
+    enable = true;
+    package = pkgs.emptyDirectory; # brew-installed
+    enableBashIntegration = false; # manual init in bash.initExtra
+  };
+
+  programs.direnv = {
+    enable = true;
+    package = pkgs.emptyDirectory; # brew-installed
+    enableBashIntegration = false; # manual init in bash.initExtra
+    nix-direnv.enable = true;
+  };
+
+  # Bat: config only, disable cache build (brew owns the binary)
+  xdg.configFile."bat/config".text = ''
+    --theme="Dracula"
+    --italic-text=always
+    --map-syntax="*.jenkinsfile:Groovy"
+    --map-syntax="*.props:Java Properties"
+  '';
+
+  programs.atuin = {
+    enable = true;
+    package = pkgs.emptyDirectory; # brew-installed
+    enableBashIntegration = false; # manual init in bash.initExtra
+    settings = {
+      auto_sync = false;
+      search_mode = "fuzzy";
+      style = "compact";
+      show_preview = true;
+      max_preview_height = 4;
+      history_filter = [
+        "^secret"
+        "password"
+        "token"
+        "export.*KEY"
+      ];
+    };
+  };
+
+  programs.lazygit = {
+    enable = true;
+    package = pkgs.emptyDirectory; # brew-installed
+    settings = {
+      gui = {
+        showIcons = true;
+        nerdFontsVersion = "3";
+      };
+      git.paging = {
+        pager = "delta --dark --paging=never";
+      };
+    };
+  };
+
+  # ---------------------------------------------------------------------------
+  # Environment
+  # ---------------------------------------------------------------------------
+
+  home.sessionVariables = {
+    EDITOR = "vim";
+    VISUAL = "vim";
+    LESS = "-R --mouse";
+    MANPAGER = "sh -c 'col -bx | bat -l man -p'";
+  };
+
+  home.sessionPath = [
+    "$HOME/.local/bin"
+    "$HOME/.cargo/bin"
+    "/usr/local/cuda/bin"
+  ];
+}

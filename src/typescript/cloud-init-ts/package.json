@@ -1,0 +1,22 @@
+{
+  "name": "cloud-init-ts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Type-safe cloud-init autoinstall configuration generator",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "generate:haruspex": "tsx configs/haruspex.ts"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

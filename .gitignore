@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Nix
+result
+result-*
+
+# Generated cloud-init output (regenerate with `npx tsx configs/<name>.ts`)
+src/typescript/cloud-init-ts/http/
+
+# OS
+.DS_Store
+*.swp
+*~
+
+# Environment
+.env
+.env.local
