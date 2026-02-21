@@ -89,7 +89,7 @@
 
     settings = {
       user.name = "kubedoll";
-      user.email = "cagyirey@gmail.com";
+      user.email = "8145742+cagyirey@users.noreply.github.com";
       init.defaultBranch = "main";
       push.autoSetupRemote = true;
       pull.rebase = true;
