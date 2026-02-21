@@ -21,6 +21,7 @@
       g = "git";
       k = "kubectl";
       dc = "docker compose";
+      du = "dust";
       ".." = "cd ..";
       "..." = "cd ../..";
     };
@@ -30,6 +31,7 @@
       command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
       command -v direnv &>/dev/null && eval "$(direnv hook bash)"
       command -v atuin &>/dev/null && eval "$(atuin init bash)"
+      command -v mise &>/dev/null && eval "$(mise activate bash)"
 
       # Source local overrides if present
       [ -f ~/.bashrc.local ] && source ~/.bashrc.local
@@ -242,6 +244,18 @@
       };
     };
   };
+
+  # ---------------------------------------------------------------------------
+  # Rust toolchain config (rustup-installed, cargo config managed here)
+  # ---------------------------------------------------------------------------
+
+  home.file.".cargo/config.toml".text = ''
+    [build]
+    rustc-wrapper = "sccache"
+
+    [target.x86_64-unknown-linux-gnu]
+    rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+  '';
 
   # ---------------------------------------------------------------------------
   # Environment
