@@ -100,6 +100,15 @@
       diff.colorMoved = "default";
       merge.conflictStyle = "zdiff3";
 
+      # SSH commit signing (key operations forwarded to local 1Password agent)
+      gpg.format = "ssh";
+      commit.gpgsign = true;
+      tag.gpgsign = true;
+      user.signingkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMpDt4C6gPqO2K93gHLXrns4zpznwqe+VgUyC8jjzBd";
+      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      # NOTE: do NOT set gpg.ssh.program here — omitting it lets git use the
+      # forwarded SSH agent. op-ssh-sign is only for machines with the desktop app.
+
       alias = {
         co = "checkout";
         br = "branch";

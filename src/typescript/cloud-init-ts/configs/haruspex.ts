@@ -115,6 +115,8 @@ const config = new AutoinstallBuilder()
       "node", "pnpm",
       // GitHub CLI
       "gh",
+      // Secrets management
+      "1password-cli",
     ],
   }))
   .addModule(rust({ user: "kubedoll" }))
