@@ -60,6 +60,7 @@ export {
   homebrew,
   yubikey,
   nix,
+  cloudflare,
   bootDisk,
   zfsRootPool,
   zfsUserHome,

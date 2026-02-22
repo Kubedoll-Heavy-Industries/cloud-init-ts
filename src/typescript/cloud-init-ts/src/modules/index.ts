@@ -9,6 +9,7 @@ export { yubikey } from "./yubikey";
 export type { YubikeyModuleOptions } from "./yubikey";
 export { nix } from "./nix";
 export type { NixModuleOptions } from "./nix";
+export { cloudflare } from "./cloudflare";
 export {
   bootDisk,
   zfsRootPool,

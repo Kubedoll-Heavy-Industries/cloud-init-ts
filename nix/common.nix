@@ -59,6 +59,10 @@
       command -v atuin &>/dev/null && eval "$(atuin init bash)"
       command -v mise &>/dev/null && eval "$(mise activate bash)"
 
+      # Use the stable SSH agent symlink (updated by ~/.ssh/rc on each login).
+      # This ensures tmux panes and Claude Code always reach the current socket.
+      [[ -e "$HOME/.ssh/ssh_auth_sock" ]] && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+
       # Source local overrides if present
       [ -f ~/.bashrc.local ] && source ~/.bashrc.local
     '';
@@ -174,6 +178,9 @@
     keyMode = "vi";
 
     extraConfig = ''
+      # Refresh agent/display env vars when attaching (new panes get updated values)
+      set -g update-environment "SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
+
       # True color support
       set -ag terminal-overrides ",xterm-256color:RGB"
 
@@ -277,6 +284,18 @@
   # ---------------------------------------------------------------------------
   # Rust toolchain config (rustup-installed, cargo config managed here)
   # ---------------------------------------------------------------------------
+
+  # SSH agent forwarding: update stable symlink on each SSH login so tmux
+  # panes and Claude Code always reach the current forwarded agent.
+  home.file.".ssh/rc" = {
+    text = ''
+      #!/bin/bash
+      if [ -n "$SSH_AUTH_SOCK" ] && [ "$SSH_AUTH_SOCK" != "$HOME/.ssh/ssh_auth_sock" ]; then
+          ln -sf "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock"
+      fi
+    '';
+    executable = true;
+  };
 
   home.file.".cargo/config.toml".text = ''
     [build]

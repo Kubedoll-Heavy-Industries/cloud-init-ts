@@ -9,6 +9,7 @@ import {
   homebrew,
   yubikey,
   nix,
+  cloudflare,
   bootDisk,
   zfsRootPool,
   zfsUserHome,
@@ -123,7 +124,7 @@ const config = new AutoinstallBuilder()
       // IaC
       "pulumi", "pulumi/tap/esc",
       // Cloudflare
-      "cloudflared", "flarectl",
+      "flarectl",
       // Rust build acceleration
       "sccache", "mold",
       // Runtime management
@@ -141,6 +142,7 @@ const config = new AutoinstallBuilder()
   }))
   .addModule(yubikey({ githubUsers: ["cagyirey"] }))
   .addModule(nix({ user: "kubedoll" }))
+  .addModule(cloudflare())
 
   .build();
 
