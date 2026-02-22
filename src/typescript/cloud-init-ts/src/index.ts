@@ -71,6 +71,7 @@ export type {
   RustModuleOptions,
   HomebrewModuleOptions,
   NixModuleOptions,
+  YubikeyModuleOptions,
   BootDiskOptions,
   ZfsRootPoolOptions,
   ZfsUserOptions,

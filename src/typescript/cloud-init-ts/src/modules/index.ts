@@ -6,6 +6,7 @@ export type { RustModuleOptions } from "./rust";
 export { homebrew } from "./homebrew";
 export type { HomebrewModuleOptions } from "./homebrew";
 export { yubikey } from "./yubikey";
+export type { YubikeyModuleOptions } from "./yubikey";
 export { nix } from "./nix";
 export type { NixModuleOptions } from "./nix";
 export {

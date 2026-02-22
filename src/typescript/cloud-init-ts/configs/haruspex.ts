@@ -133,7 +133,7 @@ const config = new AutoinstallBuilder()
     cudaVersion: "13-1",
     containerToolkit: true,
   }))
-  .addModule(yubikey())
+  .addModule(yubikey({ githubUsers: ["cagyirey"] }))
   .addModule(nix({ user: "kubedoll" }))
 
   .build();
