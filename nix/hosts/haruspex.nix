@@ -10,8 +10,9 @@
   # ---------------------------------------------------------------------------
 
   home.sessionVariables = {
-    # CUDA
+    # CUDA (RTX 4070 Ti = Ada Lovelace, compute capability 8.9)
     CUDA_HOME = "/usr/local/cuda";
+    CUDA_COMPUTE_CAP = "89";
     LD_LIBRARY_PATH = "/usr/local/cuda/lib64\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}";
   };
 

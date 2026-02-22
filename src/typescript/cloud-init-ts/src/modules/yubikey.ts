@@ -7,6 +7,9 @@ import { ModuleContribution } from "../builders";
  * pam_ssh_agent_auth for sudo authentication via forwarded SSH agent.
  * Populates /etc/security/authorized_keys from GitHub public keys.
  */
+// TODO: Support FIDO2 resident keys (ed25519-sk) as an alternative to GitHub
+// public keys. Resident keys would provide hardware-backed sudo auth requiring
+// physical YubiKey presence for each signing operation.
 export interface YubikeyModuleOptions {
   /** GitHub usernames whose public keys are authorized for sudo via SSH agent. */
   githubUsers: string[];

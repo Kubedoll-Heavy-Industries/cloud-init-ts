@@ -78,8 +78,10 @@ const config = new AutoinstallBuilder()
     "curl",
     "wget",
     "pkg-config",
+    "cmake",
     "openssl",
     "libssl-dev",
+    "libclang-dev",
     // System observability
     "nvtop",
     "lm-sensors",
