@@ -222,11 +222,14 @@
       style = "compact";
       show_preview = true;
       max_preview_height = 4;
+      filter_mode_shell_up_key_binding = "directory"; # up-arrow searches cwd history
+      filter_mode = "global";                          # Ctrl+R searches everything
       history_filter = [
         "^secret"
         "password"
         "token"
         "export.*KEY"
+        "^op\\s"                                       # 1Password CLI invocations
       ];
     };
   };

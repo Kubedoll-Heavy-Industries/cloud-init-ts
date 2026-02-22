@@ -78,6 +78,7 @@ const config = new AutoinstallBuilder()
     "curl",
     "wget",
     "pkg-config",
+    "openssl",
     "libssl-dev",
     // System observability
     "nvtop",
