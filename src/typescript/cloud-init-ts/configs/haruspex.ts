@@ -120,6 +120,8 @@ const config = new AutoinstallBuilder()
       "gh",
       // Secrets management
       "1password-cli",
+      // IaC
+      "pulumi", "pulumi/tap/esc",
       // Rust build acceleration
       "sccache", "mold",
       // Runtime management

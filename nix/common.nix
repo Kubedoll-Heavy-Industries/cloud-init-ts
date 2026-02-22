@@ -300,6 +300,7 @@
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/.cargo/bin"
+    "$HOME/.pulumi/bin"
     "/usr/local/cuda/bin"
   ];
 }
