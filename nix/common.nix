@@ -27,6 +27,32 @@
     };
     initExtra = ''
       # Shell tool integrations (brew-installed binaries, not nix)
+      #
+      # bash-preexec must load before starship/atuin so they detect it and use
+      # precmd_functions/preexec_functions arrays.
+      #
+      # WORKAROUND: systemd 256+ (Ubuntu 26.04) initializes PROMPT_COMMAND as
+      # an array via /etc/profile.d/80-systemd-osc-context.sh. bash-preexec's
+      # __bp_install replaces PROMPT_COMMAND[0] with a string but leaves its
+      # install string in [1]. That install string runs "trap - DEBUG" on every
+      # prompt, then __bp_install's guard returns early without re-setting it.
+      # Result: the DEBUG trap (which fires preexec) gets nuked every cycle.
+      # Fix: collapse PROMPT_COMMAND to a string before bash-preexec loads.
+      __flatten_prompt_command() {
+        if [[ "$(declare -p PROMPT_COMMAND 2>/dev/null)" == "declare -a"* ]]; then
+          local _pc="" _cmd
+          for _cmd in "''${PROMPT_COMMAND[@]}"; do
+            [[ -z "$_cmd" ]] && continue
+            _pc+="''${_pc:+;}$_cmd"
+          done
+          unset PROMPT_COMMAND
+          PROMPT_COMMAND="$_pc"
+        fi
+      }
+      __flatten_prompt_command
+      unset -f __flatten_prompt_command
+
+      [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
       command -v starship &>/dev/null && eval "$(starship init bash)"
       command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
       command -v direnv &>/dev/null && eval "$(direnv hook bash)"
