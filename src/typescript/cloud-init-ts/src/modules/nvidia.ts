@@ -42,9 +42,11 @@ export function nvidia(options: NvidiaModuleOptions): ModuleContribution {
 
   // Use pre-built kernel modules + headless-no-dkms to avoid DKMS/objtool
   // build failures on bleeding-edge kernels (e.g. MITIGATION_RETHUNK on 6.19).
+  // The HWE metapackage tracks kernel upgrades so modules stay in sync.
   const packages: string[] = [
     `nvidia-headless-no-dkms-${driverVersion}`,
     `nvidia-utils-${driverVersion}`,
+    `linux-modules-nvidia-${driverVersion}-generic-hwe-24.04`,
     `libnvidia-gl-${driverVersion}`,
     `libnvidia-decode-${driverVersion}`,
     `libnvidia-encode-${driverVersion}`,
