@@ -122,6 +122,8 @@ const config = new AutoinstallBuilder()
       "1password-cli",
       // IaC
       "pulumi", "pulumi/tap/esc",
+      // Cloudflare
+      "cloudflared", "flarectl",
       // Rust build acceleration
       "sccache", "mold",
       // Runtime management
